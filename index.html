@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ML</title>
+</head>
+
+<body>
+    <input type="color" value="#FF0000" />
+    <div id="example">Example text</div>
+
+    <!-- brain.js -->
+    <script src="node_modules/brain.js/browser.min.js"></script>
+    <!-- utils -->
+    <script>
+        function hexToRgb(hex) {
+            var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+            hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+                return r + r + g + g + b + b;
+            });
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+    </script>
+    <!-- app -->
+    <script>
+        const input = document.querySelector('input');
+        const example = document.querySelector('#example');
+
+        const network = new brain.NeuralNetwork();
+
+        network.train([
+            { input: { r: 64, g: 87, b: 255 }, output: { dark: 1 } },
+            { input: { r: 129, g: 252, b: 255 }, output: { light: 1 } },
+            { input: { r: 0, g: 0, b: 0 }, output: { dark: 1 } },
+            { input: { r: 255, g: 255, b: 255 }, output: { light: 1 } },
+            { input: { r: 255, g: 255, b: 255 }, output: { light: 1 } },
+            { input: { r: 254, g: 255, b: 74 }, output: { light: 1 } },
+            { input: { r: 0, g: 38, b: 255 }, output: { dark: 1 } },
+            { input: { r: 14, g: 255, b: 8 }, output: { light: 1 } },
+            { input: { r: 230, g: 28, b: 0 }, output: { dark: 1 } },
+            { input: { r: 0, g: 255, b: 245 }, output: { light: 1 } },
+            { input: { r: 0, g: 19, b: 255 }, output: { dark: 1 } },
+            { input: { r: 0, g: 79, b: 255 }, output: { dark: 1 } },
+            { input: { r: 0, g: 77, b: 255 }, output: { dark: 1 } },
+        ]);
+
+        input.addEventListener("change", (e) => {
+            const rgb = hexToRgb(e.target.value)
+            const result = brain.likely(rgb, network);
+            example.style.color = result === 'dark' ? 'white' : 'black';
+            example.style.background = e.target.value;
+        });
+    </script>
+</body>
+
+</html>
